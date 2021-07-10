@@ -10,7 +10,7 @@ function str2ab(str) {
 }
 
 // Initialize KV storage
-const kv = KV_ELYBY_PROXY;
+const kv = KV_MINESOCIAL_PROXY;
 if (kv === undefined) {
 	console.log("Error! You must create a KV namespace first.");
 	throw new Error("KV namespace not found.");
@@ -77,7 +77,7 @@ async function verifyMojangSignature(value, signature) {
 	return await crypto.subtle.verify("RSASSA-PKCS1-v1_5", mojangPublicKey, signatureBuf, dataBuf);
 }
 
-// Ely.by's texture payload doesn't contain valid signature,
+// minesocial.net's texture payload doesn't contain valid signature,
 // so we have to add one.
 async function fixBadSignature(response) {
 	if (!response.ok)
@@ -110,7 +110,7 @@ async function fixBadSignature(response) {
 	});
 }
 
-// Ely.by's response doesn't include 'user' field,
+// minesocial.net's response doesn't include 'user' field,
 // this function adds a 'user' field to the response.
 async function fixMissingUser(response) {
 	if (!response.ok)
@@ -166,33 +166,33 @@ function methodNotAllowedResponse(method, allowedMethods) {
 const forwardedEndpoints = {
 	"/authserver/authenticate": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/auth/authenticate",
+		target: "https://authserver.minesocial.net/authenticate",
 		postprocess: fixMissingUser
 	},
 	"/authserver/refresh": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/auth/refresh",
+		target: "https://authserver.minesocial.net/refresh",
 		postprocess: fixMissingUser
 	},
 	"/authserver/validate": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/auth/validate"
+		target: "https://authserver.minesocial.net/validate"
 	},
 	"/authserver/signout": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/auth/signout"
+		target: "https://authserver.minesocial.net/signout"
 	},
 	"/authserver/invalidate": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/auth/invalidate"
+		target: "https://authserver.minesocial.net/invalidate"
 	},
 	"/sessionserver/session/minecraft/join": {
 		methods: ["POST"],
-		target: "https://authserver.ely.by/session/join"
+		target: "https://sessionserver.minesocial.net/session/join"
 	},
 	"/sessionserver/session/minecraft/hasJoined": {
 		methods: ["GET"],
-		target: "https://authserver.ely.by/session/hasJoined",
+		target: "https://sessionserver.minesocial.net/hasJoined",
 		postprocess: fixBadSignature
 	}
 };
@@ -209,18 +209,18 @@ async function handleRequest(req) {
 		}
 		return new Response(JSON.stringify({
 				"meta": {
-					"implementationName": "elyby-proxy",
+					"implementationName": "minesocial-proxy",
 					"implementationVersion": "dev",
-					"serverName": "Ely.by",
+					"serverName": "minesocial.net",
 					"links": {
-						"homepage": "https://ely.by/",
-						"register": "https://account.ely.by/register"
+						"homepage": "https://minesocial.net/",
+						"register": "https://minesocial.net/signup"
 					},
 					"feature.no_mojang_namespace": true
 				},
 				"skinDomains": [
-					"ely.by",
-					".ely.by"
+					"minesocial.net",
+					".minesocial.net"
 				],
 				"signaturePublickey": await getPEMSigningPublicKey()
 			}),
@@ -250,7 +250,7 @@ async function handleRequest(req) {
 			return methodNotAllowedResponse(req.method, ["GET"]);
 		}
 		const uuid = profileUrlMatch[1];
-		let response = await forwardRequest(req, `https://authserver.ely.by/session/profile/${uuid}`);
+		let response = await forwardRequest(req, `https://sessionserver.minesocial.net/session/minecraft/profile/${uuid}`);
 		if (url.searchParams.get("unsigned") === "false") {
 			response = await fixBadSignature(response);
 		}
