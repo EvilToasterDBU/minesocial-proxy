@@ -13,7 +13,7 @@ If you want to deploy your own service instance, please follow the steps below:
 5. Go back to the worker page, open `Settings` tab, click `Add binding`
     * Variable name: `KV_MINESOCIAL_PROXY`
     * KV namespace: the KV namespace you created in the 2nd step
-6. Connect custom domain for your Cloudflare Account
+6. Connect custom domain for your Cloudflare Account.  A free domain can be found [here](http://freenom.com/).
 7. Go to `your_domine > Workers > Add route`
 8. Select your worker and enter your domain address, save it.
 9. Go to `your_domine > Rules > Create Page Rule`
